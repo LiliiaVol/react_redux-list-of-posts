@@ -16,14 +16,14 @@ import { PostDetails } from './components/PostDetails';
 export const App: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const users = useAppSelector(state => state.users);
   const posts = useAppSelector(state => state.posts);
+  const author = useAppSelector(state => state.author);
 
   useEffect(() => {
-    if (users.selectedUser) {
-      dispatch(getPostsAsync(users.selectedUser.id));
+    if (author.selectedUser) {
+      dispatch(getPostsAsync(author.selectedUser.id));
     }
-  }, [users.selectedUser, dispatch]);
+  }, [author.selectedUser, dispatch]);
 
   return (
     <main className="section">
@@ -36,7 +36,7 @@ export const App: React.FC = () => {
               </div>
 
               <div className="block" data-cy="MainContent">
-                {!users.selectedUser && (
+                {!author.selectedUser && (
                   <p data-cy="NoSelectedUser">No user selected</p>
                 )}
 
@@ -53,7 +53,7 @@ export const App: React.FC = () => {
 
                 {posts.status === 'idle' &&
                   posts.data.length === 0 &&
-                  users.selectedUser !== null && (
+                  author.selectedUser !== null && (
                     <div
                       className="notification is-warning"
                       data-cy="NoPostsYet"
@@ -77,12 +77,12 @@ export const App: React.FC = () => {
               'is-8-desktop',
               'Sidebar',
               {
-                'Sidebar--open': posts.selectedPost,
+                'Sidebar--open': author.selectedPost,
               },
             )}
           >
             <div className="tile is-child box is-success ">
-              {posts.selectedPost && <PostDetails />}
+              {author.selectedPost && <PostDetails />}
             </div>
           </div>
         </div>

@@ -1,18 +1,16 @@
 /* eslint-disable no-param-reassign */
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
 import { Post } from '../types/Post';
 import { getUserPosts } from '../api/posts';
 
 export interface PostsState {
   data: Post[];
-  selectedPost: Post | null;
   status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: PostsState = {
   data: [],
-  selectedPost: null,
   status: 'idle',
 };
 
@@ -28,14 +26,7 @@ export const getPostsAsync = createAsyncThunk(
 export const postsSlice = createSlice({
   name: 'posts',
   initialState,
-  reducers: {
-    setSelectedPost: (state, action: PayloadAction<Post | null>) => {
-      state.selectedPost = action.payload;
-    },
-    unSetSelectedPost: state => {
-      state.selectedPost = null;
-    },
-  },
+  reducers: {},
 
   extraReducers: builder => {
     builder
@@ -52,6 +43,6 @@ export const postsSlice = createSlice({
   },
 });
 
-export const { setSelectedPost, unSetSelectedPost } = postsSlice.actions;
+export const {} = postsSlice.actions;
 
 export default postsSlice.reducer;

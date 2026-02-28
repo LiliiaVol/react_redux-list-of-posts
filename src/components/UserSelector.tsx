@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { addUsersAsync, setSelectedUser } from '../features/usersSlice';
-import { unSetSelectedPost } from '../features/postsSlice';
+import { addUsersAsync } from '../features/usersSlice';
+import { setSelectedUser, unSetSelectedPost } from '../features/authorSlice';
 // import { User } from '../types/User';
 
 export const UserSelector: React.FC = () => {
@@ -15,6 +15,7 @@ export const UserSelector: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const users = useAppSelector(state => state.users);
+  const author = useAppSelector(state => state.author);
 
   useEffect(() => {
     if (users.status === 'idle') {
@@ -41,7 +42,7 @@ export const UserSelector: React.FC = () => {
 
   useEffect(() => {
     dispatch(unSetSelectedPost());
-  }, [users.selectedUser]);
+  }, [author.selectedUser]);
 
   return (
     <div
@@ -59,7 +60,7 @@ export const UserSelector: React.FC = () => {
             setExpanded(current => !current);
           }}
         >
-          <span>{users.selectedUser?.name || 'Choose a user'}</span>
+          <span>{author.selectedUser?.name || 'Choose a user'}</span>
 
           <span className="icon is-small">
             <i className="fas fa-angle-down" aria-hidden="true" />
@@ -78,7 +79,7 @@ export const UserSelector: React.FC = () => {
                 dispatch(setSelectedUser(user));
               }}
               className={classNames('dropdown-item', {
-                'is-active': users.selectedUser?.id === user.id,
+                'is-active': author.selectedUser?.id === user.id,
               })}
             >
               {user.name}

@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/indent */
+
 import React, { useEffect, useState } from 'react';
 import { Loader } from './Loader';
 import { NewCommentForm } from './NewCommentForm';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
-  deleteCommentReducer,
   getCommentsAsync,
+  deleteCommentAsync,
 } from '../features/commentsSlice';
 
 export const PostDetails: React.FC = () => {
@@ -12,75 +14,81 @@ export const PostDetails: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const post = useAppSelector(state => state.posts.selectedPost);
+  const selectedPost = useAppSelector(state => state.author.selectedPost);
   const comments = useAppSelector(state => state.comments);
 
   useEffect(() => {
-    if (post) {
-      dispatch(getCommentsAsync(post.id));
+    if (selectedPost) {
+      dispatch(getCommentsAsync(selectedPost.id));
     }
 
     setVisible(false);
-  }, [post]);
+  }, [selectedPost]);
 
   return (
     <div className="content" data-cy="PostDetails">
       <div className="block">
-        <h2 data-cy="PostTitle">{`#${post?.id}: ${post?.title}`}</h2>
+        <h2 data-cy="PostTitle">{`#${selectedPost?.id}: ${selectedPost?.title}`}</h2>
 
-        <p data-cy="PostBody">{post?.body}</p>
+        <p data-cy="PostBody">{selectedPost?.body}</p>
       </div>
 
       <div className="block">
-        {comments.status === 'loading' && <Loader />}
+        {comments.loaded && <Loader />}
 
-        {comments.status === 'failed' && (
+        {comments.hasError && (
           <div className="notification is-danger" data-cy="CommentsError">
             Something went wrong
           </div>
         )}
 
-        {comments.data.length === 0 && comments.status === 'idle' && (
-          <p className="title is-4" data-cy="NoCommentsMessage">
-            No comments yet
-          </p>
-        )}
+        {comments.items.length === 0 &&
+          !comments.loaded &&
+          !comments.hasError && (
+            <p className="title is-4" data-cy="NoCommentsMessage">
+              No comments yet
+            </p>
+          )}
 
-        {comments.data.length > 0 && comments.status === 'idle' && (
-          <>
-            <p className="title is-4">Comments:</p>
+        {comments.items.length > 0 &&
+          !comments.loaded &&
+          !comments.hasError && (
+            <>
+              <p className="title is-4">Comments:</p>
 
-            {comments.data.map(comment => (
-              <article
-                className="message is-small"
-                key={comment.id}
-                data-cy="Comment"
-              >
-                <div className="message-header">
-                  <a href={`mailto:${comment.email}`} data-cy="CommentAuthor">
-                    {comment.name}
-                  </a>
+              {comments.items.map(comment => (
+                <article
+                  className="message is-small"
+                  key={comment.id}
+                  data-cy="Comment"
+                >
+                  <div className="message-header">
+                    <a href={`mailto:${comment.email}`} data-cy="CommentAuthor">
+                      {comment.name}
+                    </a>
 
-                  <button
-                    data-cy="CommentDelete"
-                    type="button"
-                    className="delete is-small"
-                    aria-label="delete"
-                    onClick={() => dispatch(deleteCommentReducer(comment.id))}
-                  >
-                    delete button
-                  </button>
-                </div>
+                    <button
+                      data-cy="CommentDelete"
+                      type="button"
+                      className="delete is-small"
+                      aria-label="delete"
+                      onClick={() => {
+                        dispatch(deleteCommentAsync(comment.id));
+                      }}
+                    >
+                      delete button
+                    </button>
+                  </div>
 
-                <div className="message-body" data-cy="CommentBody">
-                  {comment.body}
-                </div>
-              </article>
-            ))}
-          </>
-        )}
+                  <div className="message-body" data-cy="CommentBody">
+                    {comment.body}
+                  </div>
+                </article>
+              ))}
+            </>
+          )}
 
-        {comments.status === 'idle' && !visible && (
+        {!comments.loaded && !visible && !comments.hasError && (
           <button
             data-cy="WriteCommentButton"
             type="button"

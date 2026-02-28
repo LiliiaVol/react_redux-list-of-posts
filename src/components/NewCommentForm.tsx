@@ -35,7 +35,7 @@ export const NewCommentForm: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const selectedPost = useAppSelector(state => state.posts.selectedPost);
+  const selectedPost = useAppSelector(state => state.author.selectedPost);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

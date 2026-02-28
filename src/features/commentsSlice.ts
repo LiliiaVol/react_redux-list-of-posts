@@ -5,13 +5,15 @@ import { Comment } from '../types/Comment';
 // eslint-disable-next-line import/no-cycle
 
 export interface CommentsState {
-  data: Comment[];
-  status: 'idle' | 'loading' | 'failed';
+  items: Comment[];
+  loaded: boolean;
+  hasError: boolean;
 }
 
 const initialState: CommentsState = {
-  data: [],
-  status: 'idle',
+  items: [],
+  loaded: false,
+  hasError: false,
 };
 
 export const getCommentsAsync = createAsyncThunk(
@@ -23,34 +25,47 @@ export const getCommentsAsync = createAsyncThunk(
   },
 );
 
+export const deleteCommentAsync = createAsyncThunk(
+  '/comments/delete',
+  async (postId: number) => {
+    await deleteComment(postId);
+
+    return postId;
+  },
+);
+
 export const commentsSlice = createSlice({
   name: 'comments',
   initialState,
   reducers: {
-    deleteCommentReducer: (state, action: PayloadAction<number>) => {
-      state.data = state.data.filter(comment => comment.id !== action.payload);
-      deleteComment(action.payload);
-    },
     updateComments: (state, action: PayloadAction<Comment>) => {
-      state.data = [...state.data, action.payload];
+      state.items = [...state.items, action.payload];
     },
   },
 
   extraReducers: builder => {
     builder
       .addCase(getCommentsAsync.pending, state => {
-        state.status = 'loading';
+        state.loaded = true;
+        state.hasError = false;
       })
       .addCase(getCommentsAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
-        state.data = action.payload;
+        state.loaded = false;
+        state.items = action.payload;
       })
       .addCase(getCommentsAsync.rejected, state => {
-        state.status = 'failed';
+        state.loaded = false;
+        state.hasError = true;
+      })
+
+      .addCase(deleteCommentAsync.fulfilled, (state, action) => {
+        state.items = state.items.filter(
+          comment => comment.id !== action.payload,
+        );
       });
   },
 });
 
-export const { deleteCommentReducer, updateComments } = commentsSlice.actions;
+export const { updateComments } = commentsSlice.actions;
 
 export default commentsSlice.reducer;

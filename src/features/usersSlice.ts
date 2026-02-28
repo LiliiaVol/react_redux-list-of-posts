@@ -1,18 +1,16 @@
 /* eslint-disable no-param-reassign */
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
 import { User } from '../types/User';
 import { getUsers } from '../api/users';
 
 export interface UsersState {
   data: User[];
-  selectedUser: User | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
 }
 
 const initialState: UsersState = {
   data: [],
-  selectedUser: null,
   status: 'idle',
 };
 
@@ -25,11 +23,7 @@ export const addUsersAsync = createAsyncThunk('users/fetch', async () => {
 export const usersSlice = createSlice({
   name: 'users',
   initialState,
-  reducers: {
-    setSelectedUser: (state, action: PayloadAction<User>) => {
-      state.selectedUser = action.payload;
-    },
-  },
+  reducers: {},
 
   extraReducers: builder => {
     builder
@@ -46,6 +40,6 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { setSelectedUser } = usersSlice.actions;
+export const {} = usersSlice.actions;
 
 export default usersSlice.reducer;
