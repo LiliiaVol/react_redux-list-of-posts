@@ -34,8 +34,9 @@ export const PostsList: React.FC = () => {
                   className={classNames('button', 'is-link', {
                     'is-light': post.id !== posts.selectedPost?.id,
                   })}
+
                   onClick={() => {
-                    if (post.id === posts.selectedPost?.id) {
+                    if (post.id !== posts.selectedPost?.id) {
                       dispatch(setSelectedPost(post));
                     } else {
                       dispatch(setSelectedPost(null));
